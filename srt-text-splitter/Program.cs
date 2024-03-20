@@ -11,11 +11,13 @@ public static class Program
         
         List<string> files = new List<string>();
         SrtParser srtParser = new SrtParser();
+        TextBatcher textBatcher = new TextBatcher();
         JsonFileWriter jsonFileWriter = new JsonFileWriter();
 
         string outputPath = args[0];
+        int maxWordsPerBatch = Int32.Parse(args[1]);
 
-        for (int argumentFileIndex = 1; argumentFileIndex < args.Length; argumentFileIndex++)
+        for (int argumentFileIndex = 2; argumentFileIndex < args.Length; argumentFileIndex++)
         {
             files.Add(args[argumentFileIndex]);
         }
@@ -25,6 +27,10 @@ public static class Program
             Console.WriteLine($"Started parsing '{Path.GetFileName(file)}' to a JsonArray...");
             JsonObject json = srtParser.Execute(file);
             Console.WriteLine($"Parsing done.");
+            
+            Console.WriteLine($"Batching text for '{Path.GetFileName(file)}'...");
+            json = textBatcher.Execute(maxWordsPerBatch, json);
+            Console.WriteLine("Batching done.");
             
             Console.WriteLine($"Started writing .json file for '{Path.GetFileName(file)}'...");
             jsonFileWriter.Execute(json, outputPath, Path.GetFileNameWithoutExtension(file));
