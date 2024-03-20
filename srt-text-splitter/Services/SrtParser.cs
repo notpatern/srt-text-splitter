@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Text.Encodings.Web;
+﻿using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -21,30 +20,35 @@ public class SrtParser()
     {
         for (int lineIndex = 0; lineIndex < fileToString.Length; lineIndex++)
         {
-            string key;
-            (double, double) timeCodes;
-            string text;
-
             if (!fileToString[lineIndex].Contains("-->"))
             {
                 continue;
             }
             
-            key = fileToString[lineIndex - 1];
-            timeCodes = TimeCodesToMilliseconds(fileToString[lineIndex]);
-            text = TextLinesToSingleString(fileToString, lineIndex + 1);
-            
-            string value = JsonSerializer.Serialize((timeCodes, text), new JsonSerializerOptions { IncludeFields = true, WriteIndented = true});
+            string key = fileToString[lineIndex - 1];
 
-            json.Add(key, JsonNode.Parse(value));
+            Dictionary<string, string> timeCodes = TimeCodesToMilliseconds(fileToString[lineIndex]);
+            string text = TextLinesToSingleString(fileToString, lineIndex + 1);
+            
+            Dictionary<string, string> valueDictionary =
+                new Dictionary<string, string>()
+                {
+                    ["In"] = timeCodes["In"],
+                    ["Out"] = timeCodes["Out"],
+                    ["Content"] = text
+                    
+                };
+            
+            string valueString = JsonSerializer.Serialize(valueDictionary,
+                new JsonSerializerOptions { IncludeFields = true, WriteIndented = true });
+            
+            json.Add(key, JsonNode.Parse(valueString));
         }
         
-        
-
         return json;
     }
 
-    private (double, double) TimeCodesToMilliseconds(string timecodesLine)
+    private Dictionary<string, string> TimeCodesToMilliseconds(string timecodesLine)
     {
         string firstTimeCode = "";
         string secondTimeCode = "";
@@ -73,10 +77,16 @@ public class SrtParser()
         TimeSpan secondTimeSpan = TimeSpan.ParseExact(secondTimeCode, 
             @"hh\:mm\:ss\,fff", null);
 
-        double firstTimeCodeMs = firstTimeSpan.TotalMilliseconds;
-        double secondTimeCodeMs = secondTimeSpan.TotalMilliseconds;
+        string firstTimeCodeMs = firstTimeSpan.TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+        string secondTimeCodeMs = secondTimeSpan.TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
 
-        return (firstTimeCodeMs, secondTimeCodeMs);
+        Dictionary<string, string> timeCodes = new Dictionary<string, string>
+        {
+            ["In"] = firstTimeCodeMs,
+            ["Out"] = secondTimeCodeMs
+        };
+
+        return timeCodes;
     }
 
     private string TextLinesToSingleString(string[] fileToString, int textFirstLineIndex)
