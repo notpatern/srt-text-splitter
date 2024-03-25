@@ -11,12 +11,12 @@ public class SrtParser()
         JsonObject json = new JsonObject();
         string[] fileToString = File.ReadAllLines(file);
 
-        json = PopulateJsonArray(ref fileToString, json);
+        json = PopulateJsonArray(fileToString, json);
         
         return json;
     }
 
-    private JsonObject PopulateJsonArray(ref string[] fileToString, JsonObject json)
+    private JsonObject PopulateJsonArray(string[] fileToString, JsonObject json)
     {
         for (int lineIndex = 0; lineIndex < fileToString.Length; lineIndex++)
         {
@@ -42,7 +42,7 @@ public class SrtParser()
             string valueString = JsonSerializer.Serialize(valueDictionary,
                 new JsonSerializerOptions { IncludeFields = true, WriteIndented = true });
             
-            json.Add(key, JsonNode.Parse(valueString));
+            json?.Add(key, JsonNode.Parse(valueString));
         }
         
         return json;
