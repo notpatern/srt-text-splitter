@@ -13,7 +13,7 @@ This project provides a solution for generating Json files from Srt files and ba
 
 2. **Choose .srt files to batch the content of**
 
-3. **Run the command in your command prompt**: srt-text-splitter \<output-directory\> \<amount-of-words-per-batch\> \<any-amount-of-srt-files-paths\> \<any-amount-of-srt-files-paths\> ...
+3. **Run the command in your command prompt**: srt-text-splitter.exe \<output-directory\> \<amount-of-words-per-batch\> \<any-amount-of-srt-files-paths\> \<any-amount-of-srt-files-paths\> ...
 
 4. **Monitor Output**: The script will write the Json files into the chosen output directory.
 
