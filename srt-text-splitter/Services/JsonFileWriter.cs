@@ -13,5 +13,6 @@ public class JsonFileWriter
         
         StreamWriter streamWriter = new StreamWriter(outputPath + Path.DirectorySeparatorChar + fileName + ".json", false, Encoding.UTF8);
         streamWriter.Write(jsonToString);
+        streamWriter.Close();
     }
 }
